@@ -1,0 +1,553 @@
+<html lang="en">
+
+<head>
+    <title>DG-LAB Dungeon-Lab</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta content="initial-dpr=2,maximum-dpr=3" name="flexible" />
+    <meta name="apple-mobile-web-app-title" content="DG-LAB Dungeon-Lab">
+    <meta name="keywords" content="DG-LAB Dungeon-Lab" />
+    <meta name="description" content="DG-LAB Dungeon-Lab" />
+
+    <link rel="stylesheet" href="notyf.min.css">
+
+</head>
+
+<body style="background-color: #111;">
+    <div class="container about-container normal-text-padding" style="color:#ffe99d">
+        <div class="contain-item">
+            <h2>郊狼藍牙鬧鐘系統 (V3專用版本)</h2>
+        </div>
+        <div class="contain-item">
+            <button onclick="scanBT()" id="scanBTBtn" class="common-btn">掃描郊狼設備</button>
+            <button onclick="disconnect()" id="disconnectBtn" class="common-btn red-btn display-none">斷開設備連結</button>
+        </div>
+
+
+        <div class="contain-item" style="color:#ffe99d">
+            <h4>輸出強度控制</h4>
+            <div>
+                <span>A通道: </span>
+                <input type="range" id="strengthA" min="0" max="200" value="50" style="width: 200px;">
+                <span id="strengthALabel">50</span>
+            </div>
+            <div style="margin-top: 10px;">
+                <span>B通道: </span>
+                <input type="range" id="strengthB" min="0" max="200" value="50" style="width: 200px;">
+                <span id="strengthBLabel">50</span>
+            </div>
+        </div>
+        <div class="contain-item" id="waveSelectAndPlay" onchange="changeWave()">
+            <h4>選擇要發送给AB通道的波形</h4>
+            <select id="selectDevice" style="height: 30px;background-color: #ffe99d;width: 200px;">
+                <option value="a" selected>波形A</option>
+                <option value="b">波形B</option>
+                <option value="c">波形C</option>
+            </select>
+
+            <button onclick="startSending()" class="common-btn" id="startSendBtn">開始寫入波形</button>
+            <button onclick="stopSending()" class="common-btn red-btn display-none" id="stopSendBtn">停止寫入 (並清除鬧鐘)</button>
+        </div>
+        <div class="contain-item">
+            <h4>鬧鐘功能</h4>
+            <div>
+                <input type="time" id="alarmTimeInput" style="height: 30px; background-color: #ffe99d; width: 200px;">
+            </div>
+            <div>
+                <button onclick="setAlarm()" class="common-btn" id="setAlarmBtn">設定鬧鐘 (10秒)</button>
+            </div>
+        </div>
+        
+        <span class="logs-title">連接日誌</span>
+        <div class="logs" id="logs">
+        </div>
+        <div class="contain-item">
+            <span>提示：每次斷開后重新連接新設備的間隔最好在10秒以上，網頁和系统之间的服务通信不當斷開可能導致NetworkError: GATT Server is
+                disconnected.的錯誤。這是系统和硬件調度之间的問題，可能導致連接後设备提示燈變白但是無法寫入或无法斷開的情况，此時請重整頁面并重啟郊狼，等待10秒後再次進行掃描與連接。</span>
+        </div>
+    </div>
+    <script type="text/javascript" src="notyf.min.js"></script>
+
+    <script>
+        let server; // 声明一个全局变量来存储 GATT 服务器对象
+        
+        // 鬧鐘變數
+        let alarmTime = null;
+        let alarmTriggered = false;
+        let alarmCheckInterval = null;
+        let intervalId; // 波形寫入計時器
+        
+        // 藍牙變數
+        let count = 0;
+        let errorCount = 0;
+        let selectedOption = 'a';
+
+        // V3 專用變數
+        const v3Prefix = '47'; // V3 掃描前綴
+        const v3ServiceId = ['0000180c-0000-1000-8000-00805f9b34fb']; // V3 服務id
+        
+        // V3 波形
+        const coyote3wave = {
+            'a': ['0A0A0A0A00000000',
+                '0A0A0A0A14141414',
+                '0A0A0A0A28282828',
+                '0A0A0A0A3C3C3C3C',
+                '0A0A0A0A50505050',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A00000000',
+                '0A0A0A0A00000000',
+                '0A0A0A0A00000000',
+                '0A0A0A0A00000000'
+            ], 'b': ['4A4A4A4A64646464',
+                '4545454564646464',
+                '4040404064646464',
+                '3B3B3B3B64646464',
+                '3636363664646464',
+                '3232323264646464',
+                '2D2D2D2D64646464',
+                '2828282864646464',
+                '2323232364646464',
+                '1E1E1E1E64646464',
+                '1A1A1A1A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464'
+            ], 'c': ['0A0A0A0A00000000',
+                '0A0A0A0A32323232',
+                '0A0A0A0A64646464',
+                '0A0A0A0A46464646',
+                '1515151500000000',
+                '1515151532323232',
+                '1515151564646464',
+                '1515151546464646',
+                '2020202000000000',
+                '2020202032323232',
+                '2020202064646464',
+                '2020202064646464',
+                '2B2B2B2B00000000',
+                '2B2B2B2B32323232',
+                '2B2B2B2B64646464',
+                '2B2B2B2B64646464',
+                '3636363600000000',
+                '3636363632323232',
+                '3636363664646464',
+                '3636363646464646']
+        }
+
+        // 【已修改】scanBT 函數現在直接掃描 V3
+        function scanBT() {
+            if (typeof navigator.bluetooth === 'undefined') {
+                showErrorToast('您的浏览器不支持蓝牙API，请更换为Chrome浏览器')
+                return
+            }
+            if (server) {
+                showErrorToast('请先断开当前设备，等待几秒确定断开后重新扫描，也可刷新页面。')
+                return
+            }
+
+            addLogs('Scanning for V3 Bluetooth Device...');
+            showSuccessToast('掃描 V3 設備中，請點擊掃描到的設備');
+            // 已移除 showOverlay(), showLoader(), hideScanBT()
+
+            //開始掃描設備
+            navigator.bluetooth.requestDevice({
+                filters: [{
+                    namePrefix: v3Prefix // V3 前綴
+                }],
+                optionalServices: v3ServiceId // V3 服務 ID
+            })
+                .then(device => {
+                    device.addEventListener('gattserverdisconnected', onDisconnected);
+                    addLogs('Device Name: ' + device.name);
+                    addLogs('Device Id: ' + device.id);
+                    showSuccessToast('找到设备，获取服务中，请稍等...');
+                    if (!device.gatt.connected) {
+                        addLogs('Connecting to GATT Server...');
+                        return device.gatt.connect();
+                    } else {
+                        addLogs('Already connected to GATT Server...');
+                        return Promise.resolve();
+                    }
+                })
+                .then(gattServer => {
+                    server = gattServer; 
+                    return server.getPrimaryServices();
+                })
+                .then(services => {
+                    console.log('services', services)
+                    hideBtn('scanBTBtn')
+                    showBtn('disconnectBtn') 
+                    // 已移除 hideOverlay()
+                    addLogs('服务获取成功。')
+                    addLogs('已连接设备')
+                    showSuccessToast('已连接设备')
+                })
+                .catch(error => {
+                    console.error('Error: ' + error);
+                    addLogs('异常：连接设备失败。error: ' + error)
+                    // 已移除 hideOverlay()
+                    showErrorToast('连接失败，请查看日志信息')
+                });
+        }
+
+        function disconnect() {
+            if (server) {
+                server.disconnect(); 
+                server = null; 
+                stopSending(); // 確保在斷開時也清除鬧鐘
+                hideBtn('disconnectBtn')
+                showBtn('scanBTBtn') 
+            }
+        }
+        function hexStringToUint8Array(hexString) {
+            if (hexString.length % 2 !== 0) {
+                throw new Error('Hex string length must be even');
+                addLogs('Hex字符串长度必须是偶数')
+            }
+
+            const array = new Uint8Array(hexString.length / 2);
+            for (let i = 0; i < hexString.length; i += 2) {
+                array[i / 2] = parseInt(hexString.substr(i, 2), 16);
+            }
+            return array;
+        }
+        
+        function startSending() {
+            if (!server) {
+                addLogs('請先連接設備')
+                showErrorToast('請先連接設備')
+                return;
+            }
+            if (intervalId) {
+                return;
+            }
+            addLogs('開始寫入波形數據')
+            showBtn('stopSendBtn') 
+            hideBtn('startSendBtn') 
+            intervalId = setInterval(setBT, 100);
+        }
+
+        // 【已修改】stopSending 函數現在會清除鬧鐘
+        function stopSending() {
+            count = 0;
+            addLogs('停止寫入波形數據')
+            showBtn('startSendBtn') 
+            hideBtn('stopSendBtn') 
+            
+            // 停止波形寫入計時器
+            if (typeof intervalId !== 'undefined' && intervalId != null) {
+                clearInterval(intervalId);
+                intervalId = null; 
+                addLogs('已清除波形寫入計時器')
+            }
+
+            // 【新增】清除鬧鐘設定
+            if (alarmCheckInterval) {
+                clearInterval(alarmCheckInterval);
+                alarmCheckInterval = null;
+            }
+            alarmTime = null;
+            alarmTriggered = false;
+            document.getElementById('alarmTimeInput').value = ""; // 清空時間輸入框
+            addLogs('鬧鐘設定已清除');
+            showSuccessToast('鬧鐘已清除');
+        }
+
+        function onDisconnected(event) {
+            const device = event.target;
+            showErrorToast(`设备: ${device.name} 已经断开连接`);
+            addLogs(`设备: ${device.name} 已经断开连接`);
+            server = null;
+            showBtn('scanBTBtn') 
+            hideBtn('disconnectBtn')
+        }
+
+        // setBT 函數現在只包含 V3 邏輯
+        function setBT() {
+            if (errorCount > 5) {
+                stopSending()
+                return;
+            }
+            if (!server) {
+                errorCount++;
+                addLogs('设备未连接, 未获取到服务')
+                showErrorToast('设备未连接，若已连接请重连')
+                return;
+            }
+            
+            // *** V3.0 設備邏輯 ***
+            let serviceId = v3ServiceId[0]; 
+            let currentIndex = count % coyote3wave[selectedOption].length;
+            let waveData = coyote3wave[selectedOption][currentIndex];
+            
+            let strengthA_val = parseInt(document.getElementById('strengthA').value);
+            let strengthB_val = parseInt(document.getElementById('strengthB').value);
+
+            let hexA = strengthA_val.toString(16).padStart(2, '0');
+            let hexB = strengthB_val.toString(16).padStart(2, '0');
+
+            // B0 指令: 序列號 0, 解讀方式 F (絕對強度), A強度, B強度, A波形, B波形
+            let valueA = 'B00F' + hexA + hexB + waveData + waveData;
+            
+            let characteristicIdA = '0000150a-0000-1000-8000-00805f9b34fb'; // 3.0 UUID
+
+            server.getPrimaryService(serviceId)
+                .then(service => {
+                    return service.getCharacteristic(characteristicIdA);
+                })
+                .then(characteristicA => {
+                    characteristicA.writeValue(hexStringToUint8Array(valueA));
+                }).then(() => {
+                    count++;
+                    if (count % 100 === 0) {
+                        addLogs('写入成功，写入次数' + count);
+                    }
+                })
+                .catch(error => {
+                    errorCount++;
+                    addLogs('波形写入异常：' + error)
+                    showErrorToast('波形写入异常：' + error);
+                });
+        }
+
+        function showSuccessToast(message) {
+            let notyf = new Notyf();
+            notyf.success(message);
+        }
+
+        function showErrorToast(message) {
+            let notyf = new Notyf();
+            notyf.error(message);
+        }
+
+        // 【已移除】 showOverlay, hideOverlay, showLoader, hiddenLoader, showScanBT, hideScanBT, toggleShowScanBT
+
+        function hideBtn(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        function showBtn(id) {
+            document.getElementById(id).style.display = "block";
+        }
+
+        function removeDisplayNone(id) {
+            document.getElementById(id).classList.remove('display-none');
+        }
+
+        function addLogs(log) {
+            let time = new Date().toLocaleTimeString();
+            let logs = document.getElementById('logs');
+            logs.innerHTML += time + ": " + log + '<br>';
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function changeWave() {
+            selectedOption = document.getElementById("selectDevice").value;
+            addLogs('切换波形为: ' + selectedOption);
+        }
+
+        // ========== 鬧鐘功能函數 ==========
+        
+        document.getElementById('strengthA').addEventListener('input', function() {
+            document.getElementById('strengthALabel').innerText = this.value;
+        });
+        document.getElementById('strengthB').addEventListener('input', function() {
+            document.getElementById('strengthBLabel').innerText = this.value;
+        });
+
+        function setAlarm() {
+            const timeInput = document.getElementById('alarmTimeInput').value;
+            if (!timeInput) {
+                showErrorToast('請先選擇時間');
+                return;
+            }
+            
+            alarmTime = timeInput; 
+            alarmTriggered = false;
+            addLogs('鬧鐘已設定在: ' + alarmTime);
+            showSuccessToast('鬧鐘已設定在: ' + alarmTime);
+
+            if (!alarmCheckInterval) {
+                alarmCheckInterval = setInterval(checkAlarm, 1000);
+            }
+        }
+
+        function checkAlarm() {
+            if (!alarmTime || alarmTriggered || !server) {
+                return;
+            }
+
+            const now = new Date();
+            const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
+                                now.getMinutes().toString().padStart(2, '0');
+
+            if (currentTime === alarmTime) {
+                addLogs('鬧鐘觸發！');
+                alarmTriggered = true; 
+                triggerAlarmWave(10); // 觸發10秒
+            }
+        }
+
+        function triggerAlarmWave(durationInSeconds) {
+            if (!server) {
+                addLogs('設備未連接，鬧鐘無法觸發');
+                alarmTriggered = false; 
+                return;
+            }
+
+            addLogs('鬧鐘響鈴 ' + durationInSeconds + ' 秒...');
+            startSending(); 
+
+            setTimeout(function() {
+                addLogs('鬧鐘停止。');
+                stopSending(); // stopSending 現在會自動清除鬧鐘
+            }, durationInSeconds * 1000);
+        }
+
+        // ========== 鬧鐘功能函數結束 ==========
+
+        window.onload = function () {
+            addLogs('页面加载完成');
+            addLogs('尚未连接设备');
+            showSuccessToast('请点击扫描按钮开始扫描');
+        }
+
+    </script>
+    <style>
+        .overlay {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        .loader {
+            display: none;
+            width: 50px;
+            padding: 8px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: #ffe99d;
+            --_m:
+                conic-gradient(#0000 10%, #000),
+                linear-gradient(#000 0 0) content-box;
+            -webkit-mask: var(--_m);
+            mask: var(--_m);
+            -webkit-mask-composite: source-out;
+            mask-composite: subtract;
+            animation: l3 1s infinite linear;
+            position: absolute;
+            top: 50%;
+            left: calc(50% - 25px);
+        }
+
+        @keyframes l3 {
+            to {
+                transform: rotate(1turn)
+            }
+        }
+
+        .contain-item {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0 12px 0;
+            flex-direction: column;
+            align-items: center;
+            color: #ffe99d;
+        }
+
+        .close-btn {
+            background-color: transparent;
+            border: 1px solid #ffe99d;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            color: #ffe99d;
+            transition: 0.3s;
+        }
+
+        .close-btn:hover {
+            background-color: #ffe99d;
+            color: #000;
+        }
+
+        .contain-item>*:not(:first-child) {
+            margin-top: 6px; /* *** 已從 20px 修改為 6px *** */
+        }
+
+        .fixed-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .visible-hidden {
+            visibility: hidden;
+        }
+
+        .common-btn {
+            padding: 8px 50px;
+            border-radius: 5px;
+            background-color: #ffe99d;
+            color: #000;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .red-btn {
+            background-color: #fd3131;
+        }
+
+        .display-none {
+            display: none;
+            border: none;
+        }
+
+
+
+        .logs-title {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            margin-top: 26px;
+        }
+
+        .logs {
+            height: 200px;
+            overflow-y: scroll;
+            border: 1px solid #ffe99d;
+            margin: 10px 20px 0px 20px;
+        }
+
+        *::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background-color: #ffe99d;
+        }
+    </style>
+</body>
+
+</html>
