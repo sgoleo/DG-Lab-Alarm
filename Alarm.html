@@ -78,7 +78,7 @@
         </div>
         <div class="contain-item">
             <span>提示：每次斷開后重新連接新設備的間隔最好在10秒以上，網頁和系统之间的服务通信不當斷開可能導致NetworkError: GATT Server is
-                disconnected.的錯誤。這是系统和硬件調度之间的問題，可能導致連接後设备提示燈變白但是無法寫入或无法斷開的情况，此時請重整頁面并重啟郊狼，等待10秒後再次進行掃描與連接。</span>
+                disconnected.的錯誤。這是系统和硬件調度之间的問題，可能導致連接後設備提示燈變白但是無法寫入或无法斷開的情况，此時請重整頁面并重啟郊狼，等待10秒後再次進行掃描與連接。</span>
             <div style="margin-top: 10px;">
                 開發團隊官網:
                 <a href="https://sgoplus.one/" target="_blank"
@@ -164,11 +164,11 @@
         // scanBT 函數現在直接掃描 V3
         function scanBT() {
             if (typeof navigator.bluetooth === 'undefined') {
-                showErrorToast('您的浏览器不支持蓝牙API，请更换为Chrome浏览器')
+                showErrorToast('您的瀏覽器不支持藍牙API，請更換為Chrome瀏覽器')
                 return
             }
             if (server) {
-                showErrorToast('请先断开当前设备，等待几秒确定断开后重新扫描，也可刷新页面。')
+                showErrorToast('請先斷開當前設備，等待幾秒確定斷開後重新掃描，也可刷新頁面。')
                 return
             }
 
@@ -187,7 +187,7 @@
                     device.addEventListener('gattserverdisconnected', onDisconnected);
                     addLogs('Device Name: ' + device.name);
                     addLogs('Device Id: ' + device.id);
-                    showSuccessToast('找到设备，获取服务中，请稍等...');
+                    showSuccessToast('找到設備，獲取服務中，請稍等...');
                     if (!device.gatt.connected) {
                         addLogs('Connecting to GATT Server...');
                         return device.gatt.connect();
@@ -206,14 +206,14 @@
                     showBtn('disconnectBtn')
                     // 已移除 hideOverlay()
                     addLogs('服务获取成功。')
-                    addLogs('已连接设备')
-                    showSuccessToast('已连接设备')
+                    addLogs('已連接設備')
+                    showSuccessToast('已連接設備')
                 })
                 .catch(error => {
                     console.error('Error: ' + error);
-                    addLogs('异常：连接设备失败。error: ' + error)
+                    addLogs('異常：連接設備失敗。error: ' + error)
                     // 已移除 hideOverlay()
-                    showErrorToast('连接失败，请查看日志信息')
+                    showErrorToast('連接失敗，請查看日誌信息')
                 });
         }
 
@@ -282,8 +282,8 @@
 
         function onDisconnected(event) {
             const device = event.target;
-            showErrorToast(`设备: ${device.name} 已经断开连接`);
-            addLogs(`设备: ${device.name} 已经断开连接`);
+            showErrorToast(`設備: ${device.name} 已斷開連接`);
+            addLogs(`設備: ${device.name} 已斷開連接`);
             server = null;
             showBtn('scanBTBtn')
             hideBtn('disconnectBtn')
@@ -327,13 +327,13 @@
                 }).then(() => {
                     count++;
                     if (count % 100 === 0) {
-                        addLogs('写入成功，写入次数' + count);
+                        addLogs('寫入成功，寫入次數' + count);
                     }
                 })
                 .catch(error => {
                     errorCount++;
-                    addLogs('波形写入异常：' + error)
-                    showErrorToast('波形写入异常：' + error);
+                    addLogs('波形寫入異常：' + error)
+                    showErrorToast('波形寫入異常：' + error);
                 });
         }
 
