@@ -15,6 +15,15 @@
     <meta name="description" content="DG-LAB Dungeon-Lab" />
 
     <link rel="stylesheet" href="notyf.min.css">
+    <link rel="icon"
+        href="https://prd.resource-api.lit.link/images/creators/e8faf202-097b-4c6e-b813-1aa41e6656bd/5d281197-2b76-4f9d-a5b8-4bede92443d0.png"
+        type="image/png">
+    <link rel="apple-touch-icon"
+        href="https://prd.resource-api.lit.link/images/creators/e8faf202-097b-4c6e-b813-1aa41e6656bd/5d281197-2b76-4f9d-a5b8-4bede92443d0.png">
+    <meta property="og:image"
+        content="https://prd.resource-api.lit.link/images/creators/e8faf202-097b-4c6e-b813-1aa41e6656bd/5d281197-2b76-4f9d-a5b8-4bede92443d0.png">
+    <meta name="twitter:image"
+        content="https://prd.resource-api.lit.link/images/creators/e8faf202-097b-4c6e-b813-1aa41e6656bd/5d281197-2b76-4f9d-a5b8-4bede92443d0.png">
 
 </head>
 
@@ -24,7 +33,8 @@
             <h2>郊狼藍牙鬧鐘系統 (V3專用版本)</h2>
             <div class="btn-group">
                 <button onclick="scanBT()" id="scanBTBtn" class="common-btn">掃描郊狼設備</button>
-                <button onclick="disconnect()" id="disconnectBtn" class="common-btn red-btn display-none">斷開設備連結</button>
+                <button onclick="disconnect()" id="disconnectBtn"
+                    class="common-btn red-btn display-none">斷開設備連結</button>
             </div>
         </div>
 
@@ -50,7 +60,8 @@
             </select>
 
             <button onclick="startSending()" class="common-btn" id="startSendBtn">開始寫入波形</button>
-            <button onclick="stopSending()" class="common-btn red-btn display-none" id="stopSendBtn">停止寫入 (並清除鬧鐘)</button>
+            <button onclick="stopSending()" class="common-btn red-btn display-none" id="stopSendBtn">停止寫入
+                (並清除鬧鐘)</button>
         </div>
         <div class="contain-item">
             <h4>鬧鐘功能</h4>
@@ -61,18 +72,25 @@
                 <button onclick="setAlarm()" class="common-btn" id="setAlarmBtn">設定鬧鐘 (10秒)</button>
             </div>
         </div>
-        
+
         <span class="logs-title">連接日誌</span>
         <div class="logs" id="logs">
         </div>
         <div class="contain-item">
             <span>提示：每次斷開后重新連接新設備的間隔最好在10秒以上，網頁和系统之间的服务通信不當斷開可能導致NetworkError: GATT Server is
                 disconnected.的錯誤。這是系统和硬件調度之间的問題，可能導致連接後设备提示燈變白但是無法寫入或无法斷開的情况，此時請重整頁面并重啟郊狼，等待10秒後再次進行掃描與連接。</span>
+            <div style="margin-top: 10px;">
+                開發團隊官網:
+                <a href="https://sgoplus.one/" target="_blank"
+                    style="color: #20b2aa; text-decoration: underline;">https://sgoplus.one/</a> 及
+                <a href="https://kiriyo.link/" target="_blank"
+                    style="color: #20b2aa; text-decoration: underline;">https://kiriyo.link/</a>
+            </div>
         </div>
     </div>
     <script type="text/javascript" src="notyf.min.js"></script>
 
-<script>
+    <script>
         let server; // 声明一个全局变量来存储 GATT 服务器对象
 
         // 鬧鐘變數
@@ -93,54 +111,54 @@
         // V3 波形
         const coyote3wave = {
             'a': ['0A0A0A0A00000000',
-            '0A0A0A0A14141414',
-            '0A0A0A0A28282828',
-            '0A0A0A0A3C3C3C3C',
-            '0A0A0A0A50505050',
-            '0A0A0A0A64646464',
-            '0A0A0A0A64646464',
-            '0A0A0A0A64646464',
-            '0A0A0A0A00000000',
-            '0A0A0A0A00000000',
-            '0A0A0A0A00000000',
-            '0A0A0A0A00000000'
+                '0A0A0A0A14141414',
+                '0A0A0A0A28282828',
+                '0A0A0A0A3C3C3C3C',
+                '0A0A0A0A50505050',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A00000000',
+                '0A0A0A0A00000000',
+                '0A0A0A0A00000000',
+                '0A0A0A0A00000000'
             ], 'b': ['4A4A4A4A64646464',
-            '4545454564646464',
-            '4040404064646464',
-            '3B3B3B3B64646464',
-            '3636363664646464',
-            '3232323264646464',
-            '2D2D2D2D64646464',
-            '2828282864646464',
-            '2323232364646464',
-            '1E1E1E1E64646464',
-            '1A1A1A1A64646464',
-            '0A0A0A0A64646464',
-            '0A0A0A0A64646464',
-            '0A0A0A0A64646464',
-            '0A0A0A0A64646464',
-            '0A0A0A0A64646464',
-            '0A0A0A0A64646464'
+                '4545454564646464',
+                '4040404064646464',
+                '3B3B3B3B64646464',
+                '3636363664646464',
+                '3232323264646464',
+                '2D2D2D2D64646464',
+                '2828282864646464',
+                '2323232364646464',
+                '1E1E1E1E64646464',
+                '1A1A1A1A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464'
             ], 'c': ['0A0A0A0A00000000',
-            '0A0A0A0A32323232',
-            '0A0A0A0A64646464',
-            '0A0A0A0A46464646',
-            '1515151500000000',
-            '1515151532323232',
-            '1515151564646464',
-            '1515151546464646',
-            '2020202000000000',
-            '2020202032323232',
-            '2020202064646464',
-            '2020202064646464',
-            '2B2B2B2B00000000',
-            '2B2B2B2B32323232',
-            '2B2B2B2B64646464',
-            '2B2B2B2B64646464',
-            '3636363600000000',
-            '3636363632323232',
-            '3636363664646464',
-            '3636363646464646']
+                '0A0A0A0A32323232',
+                '0A0A0A0A64646464',
+                '0A0A0A0A46464646',
+                '1515151500000000',
+                '1515151532323232',
+                '1515151564646464',
+                '1515151546464646',
+                '2020202000000000',
+                '2020202032323232',
+                '2020202064646464',
+                '2020202064646464',
+                '2B2B2B2B00000000',
+                '2B2B2B2B32323232',
+                '2B2B2B2B64646464',
+                '2B2B2B2B64646464',
+                '3636363600000000',
+                '3636363632323232',
+                '3636363664646464',
+                '3636363646464646']
         }
 
         // scanBT 函數現在直接掃描 V3
@@ -165,14 +183,14 @@
                 }],
                 optionalServices: v3ServiceId // V3 服務 ID
             })
-            .then(device => {
-                device.addEventListener('gattserverdisconnected', onDisconnected);
-                addLogs('Device Name: ' + device.name);
-                addLogs('Device Id: ' + device.id);
-                showSuccessToast('找到设备，获取服务中，请稍等...');
-                if (!device.gatt.connected) {
-                    addLogs('Connecting to GATT Server...');
-                    return device.gatt.connect();
+                .then(device => {
+                    device.addEventListener('gattserverdisconnected', onDisconnected);
+                    addLogs('Device Name: ' + device.name);
+                    addLogs('Device Id: ' + device.id);
+                    showSuccessToast('找到设备，获取服务中，请稍等...');
+                    if (!device.gatt.connected) {
+                        addLogs('Connecting to GATT Server...');
+                        return device.gatt.connect();
                     } else {
                         addLogs('Already connected to GATT Server...');
                         return Promise.resolve();
@@ -197,240 +215,242 @@
                     // 已移除 hideOverlay()
                     showErrorToast('连接失败，请查看日志信息')
                 });
-            }
+        }
 
-            function disconnect() {
-                if (server) {
-                    server.disconnect();
-                    server = null;
-                    stopSending(); // 確保在斷開時也清除鬧鐘
-                    hideBtn('disconnectBtn')
-                    showBtn('scanBTBtn')
-                }
-            }
-            function hexStringToUint8Array(hexString) {
-                if (hexString.length % 2 !== 0) {
-                    throw new Error('Hex string length must be even');
-                    addLogs('Hex字符串长度必须是偶数')
-                }
-
-                const array = new Uint8Array(hexString.length / 2);
-                for (let i = 0; i < hexString.length; i += 2) {
-                    array[i / 2] = parseInt(hexString.substr(i, 2), 16);
-                }
-                return array;
-            }
-
-            function startSending() {
-                if (!server) {
-                    addLogs('請先連接設備')
-                    showErrorToast('請先連接設備')
-                    return;
-                }
-                if (intervalId) {
-                    return;
-                }
-                addLogs('開始寫入波形數據')
-                showBtn('stopSendBtn')
-                hideBtn('startSendBtn')
-                intervalId = setInterval(setBT, 100);
-            }
-
-            // stopSending 函數現在會清除鬧鐘
-            function stopSending() {
-                count = 0;
-                addLogs('停止寫入波形數據')
-                showBtn('startSendBtn')
-                hideBtn('stopSendBtn')
-
-                // 停止波形寫入計時器
-                if (typeof intervalId !== 'undefined' && intervalId != null) {
-                    clearInterval(intervalId);
-                    intervalId = null;
-                    addLogs('已清除波形寫入計時器')
-                }
-
-                清除鬧鐘設定
-                if (alarmCheckInterval) {
-                    clearInterval(alarmCheckInterval);
-                    alarmCheckInterval = null;
-                }
-                alarmTime = null;
-                alarmTriggered = false;
-                document.getElementById('alarmTimeInput').value = ""; // 清空時間輸入框
-                addLogs('鬧鐘設定已清除');
-                showSuccessToast('鬧鐘已清除');
-            }
-
-            function onDisconnected(event) {
-                const device = event.target;
-                showErrorToast(`设备: ${device.name} 已经断开连接`);
-                addLogs(`设备: ${device.name} 已经断开连接`);
+        function disconnect() {
+            if (server) {
+                server.disconnect();
                 server = null;
-                showBtn('scanBTBtn')
+                stopSending(); // 確保在斷開時也清除鬧鐘
                 hideBtn('disconnectBtn')
+                showBtn('scanBTBtn')
+            }
+        }
+        function hexStringToUint8Array(hexString) {
+            if (hexString.length % 2 !== 0) {
+                throw new Error('Hex string length must be even');
+                addLogs('Hex字符串长度必须是偶数')
             }
 
-            // setBT 函數現在只包含 V3 邏輯
-            function setBT() {
-                if (errorCount > 5) {
-                    stopSending()
-                    return;
-                }
-                if (!server) {
-                    errorCount++;
-                    addLogs('设备未连接, 未获取到服务')
-                    showErrorToast('设备未连接，若已连接请重连')
-                    return;
-                }
+            const array = new Uint8Array(hexString.length / 2);
+            for (let i = 0; i < hexString.length; i += 2) {
+                array[i / 2] = parseInt(hexString.substr(i, 2), 16);
+            }
+            return array;
+        }
 
-                // *** V3.0 設備邏輯 ***
-                let serviceId = v3ServiceId[0];
-                let currentIndex = count % coyote3wave[selectedOption].length;
-                let waveData = coyote3wave[selectedOption][currentIndex];
+        function startSending() {
+            if (!server) {
+                addLogs('請先連接設備')
+                showErrorToast('請先連接設備')
+                return;
+            }
+            if (intervalId) {
+                return;
+            }
+            addLogs('開始寫入波形數據')
+            showBtn('stopSendBtn')
+            hideBtn('startSendBtn')
+            intervalId = setInterval(setBT, 100);
+        }
 
-                let strengthA_val = parseInt(document.getElementById('strengthA').value);
-                let strengthB_val = parseInt(document.getElementById('strengthB').value);
+        // stopSending 函數現在會清除鬧鐘
+        function stopSending() {
+            count = 0;
+            addLogs('停止寫入波形數據')
+            showBtn('startSendBtn')
+            hideBtn('stopSendBtn')
 
-                let hexA = strengthA_val.toString(16).padStart(2, '0');
-                let hexB = strengthB_val.toString(16).padStart(2, '0');
+            // 停止波形寫入計時器
+            if (typeof intervalId !== 'undefined' && intervalId != null) {
+                clearInterval(intervalId);
+                intervalId = null;
+                addLogs('已清除波形寫入計時器')
+            }
 
-                // B0 指令: 序列號 0, 解讀方式 F (絕對強度), A強度, B強度, A波形, B波形
-                let valueA = 'B00F' + hexA + hexB + waveData + waveData;
+            清除鬧鐘設定
+            if (alarmCheckInterval) {
+                clearInterval(alarmCheckInterval);
+                alarmCheckInterval = null;
+            }
+            alarmTime = null;
+            alarmTriggered = false;
+            document.getElementById('alarmTimeInput').value = ""; // 清空時間輸入框
+            addLogs('鬧鐘設定已清除');
+            showSuccessToast('鬧鐘已清除');
+        }
 
-                let characteristicIdA = '0000150a-0000-1000-8000-00805f9b34fb'; // 3.0 UUID
+        function onDisconnected(event) {
+            const device = event.target;
+            showErrorToast(`设备: ${device.name} 已经断开连接`);
+            addLogs(`设备: ${device.name} 已经断开连接`);
+            server = null;
+            showBtn('scanBTBtn')
+            hideBtn('disconnectBtn')
+        }
 
-                server.getPrimaryService(serviceId)
+        // setBT 函數現在只包含 V3 邏輯
+        function setBT() {
+            if (errorCount > 5) {
+                stopSending()
+                return;
+            }
+            if (!server) {
+                errorCount++;
+                addLogs('设备未连接, 未获取到服务')
+                showErrorToast('设备未连接，若已连接请重连')
+                return;
+            }
+
+            // *** V3.0 設備邏輯 ***
+            let serviceId = v3ServiceId[0];
+            let currentIndex = count % coyote3wave[selectedOption].length;
+            let waveData = coyote3wave[selectedOption][currentIndex];
+
+            let strengthA_val = parseInt(document.getElementById('strengthA').value);
+            let strengthB_val = parseInt(document.getElementById('strengthB').value);
+
+            let hexA = strengthA_val.toString(16).padStart(2, '0');
+            let hexB = strengthB_val.toString(16).padStart(2, '0');
+
+            // B0 指令: 序列號 0, 解讀方式 F (絕對強度), A強度, B強度, A波形, B波形
+            let valueA = 'B00F' + hexA + hexB + waveData + waveData;
+
+            let characteristicIdA = '0000150a-0000-1000-8000-00805f9b34fb'; // 3.0 UUID
+
+            server.getPrimaryService(serviceId)
                 .then(service => {
                     return service.getCharacteristic(characteristicIdA);
                 })
                 .then(characteristicA => {
                     characteristicA.writeValue(hexStringToUint8Array(valueA));
-                    }).then(() => {
-                        count++;
-                        if (count % 100 === 0) {
-                            addLogs('写入成功，写入次数' + count);
-                        }
-                    })
-                    .catch(error => {
-                        errorCount++;
-                        addLogs('波形写入异常：' + error)
-                        showErrorToast('波形写入异常：' + error);
-                    });
-                }
-
-                function showSuccessToast(message) {
-                    let notyf = new Notyf();
-                    notyf.success(message);
-                }
-
-                function showErrorToast(message) {
-                    let notyf = new Notyf();
-                    notyf.error(message);
-                }
-
-                 showOverlay, hideOverlay, showLoader, hiddenLoader, showScanBT, hideScanBT, toggleShowScanBT
-
-                function hideBtn(id) {
-                    document.getElementById(id).style.display = "none";
-                }
-
-                function showBtn(id) {
-                    document.getElementById(id).style.display = "block";
-                }
-
-                function removeDisplayNone(id) {
-                    document.getElementById(id).classList.remove('display-none');
-                }
-
-                function addLogs(log) {
-                    let time = new Date().toLocaleTimeString();
-                    let logs = document.getElementById('logs');
-                    logs.innerHTML += time + ": " + log + '<br>';
-                    logs.scrollTop = logs.scrollHeight;
-                }
-
-                function changeWave() {
-                    selectedOption = document.getElementById("selectDevice").value;
-                    addLogs('切换波形为: ' + selectedOption);
-                }
-
-                // ========== 鬧鐘功能函數 ==========
-
-                document.getElementById('strengthA').addEventListener('input', function() {
-                    document.getElementById('strengthALabel').innerText = this.value;
+                }).then(() => {
+                    count++;
+                    if (count % 100 === 0) {
+                        addLogs('写入成功，写入次数' + count);
+                    }
+                })
+                .catch(error => {
+                    errorCount++;
+                    addLogs('波形写入异常：' + error)
+                    showErrorToast('波形写入异常：' + error);
                 });
-                document.getElementById('strengthB').addEventListener('input', function() {
-                    document.getElementById('strengthBLabel').innerText = this.value;
-                });
+        }
 
-                function setAlarm() {
-                    const timeInput = document.getElementById('alarmTimeInput').value;
-                    if (!timeInput) {
-                        showErrorToast('請先選擇時間');
-                        return;
-                    }
+        function showSuccessToast(message) {
+            let notyf = new Notyf();
+            notyf.success(message);
+        }
 
-                    alarmTime = timeInput;
-                    alarmTriggered = false;
-                    addLogs('鬧鐘已設定在: ' + alarmTime);
-                    showSuccessToast('鬧鐘已設定在: ' + alarmTime);
+        function showErrorToast(message) {
+            let notyf = new Notyf();
+            notyf.error(message);
+        }
 
-                    if (!alarmCheckInterval) {
-                        alarmCheckInterval = setInterval(checkAlarm, 1000);
-                    }
-                }
+        showOverlay, hideOverlay, showLoader, hiddenLoader, showScanBT, hideScanBT, toggleShowScanBT
 
-                function checkAlarm() {
-                    if (!alarmTime || alarmTriggered || !server) {
-                        return;
-                    }
+        function hideBtn(id) {
+            document.getElementById(id).style.display = "none";
+        }
 
-                    const now = new Date();
-                    const currentTime = now.getHours().toString().padStart(2, '0') + ':' +
-                    now.getMinutes().toString().padStart(2, '0');
+        function showBtn(id) {
+            document.getElementById(id).style.display = "block";
+        }
 
-                    if (currentTime === alarmTime) {
-                        addLogs('鬧鐘觸發！');
-                        alarmTriggered = true;
-                        triggerAlarmWave(10); // 觸發10秒
-                    }
-                }
+        function removeDisplayNone(id) {
+            document.getElementById(id).classList.remove('display-none');
+        }
 
-                function triggerAlarmWave(durationInSeconds) {
-                    if (!server) {
-                        addLogs('設備未連接，鬧鐘無法觸發');
-                        alarmTriggered = false;
-                        return;
-                    }
+        function addLogs(log) {
+            let time = new Date().toLocaleTimeString();
+            let logs = document.getElementById('logs');
+            logs.innerHTML += time + ": " + log + '<br>';
+            logs.scrollTop = logs.scrollHeight;
+        }
 
-                    addLogs('鬧鐘響鈴 ' + durationInSeconds + ' 秒...');
-                    startSending();
+        function changeWave() {
+            selectedOption = document.getElementById("selectDevice").value;
+            addLogs('切换波形为: ' + selectedOption);
+        }
 
-                    setTimeout(function() {
-                        addLogs('鬧鐘停止。');
-                        stopSending(); // stopSending 現在會自動清除鬧鐘
-                    }, durationInSeconds * 1000);
-                }
+        // ========== 鬧鐘功能函數 ==========
 
-                // ========== 鬧鐘功能函數結束 ==========
+        document.getElementById('strengthA').addEventListener('input', function () {
+            document.getElementById('strengthALabel').innerText = this.value;
+        });
+        document.getElementById('strengthB').addEventListener('input', function () {
+            document.getElementById('strengthBLabel').innerText = this.value;
+        });
 
-                window.onload = function () {
-                    addLogs('页面加载完成');
-                    addLogs('尚未连接设备');
-                    showSuccessToast('请点击扫描按钮开始扫描');
-                }
+        function setAlarm() {
+            const timeInput = document.getElementById('alarmTimeInput').value;
+            if (!timeInput) {
+                showErrorToast('請先選擇時間');
+                return;
+            }
+
+            alarmTime = timeInput;
+            alarmTriggered = false;
+            addLogs('鬧鐘已設定在: ' + alarmTime);
+            showSuccessToast('鬧鐘已設定在: ' + alarmTime);
+
+            if (!alarmCheckInterval) {
+                alarmCheckInterval = setInterval(checkAlarm, 1000);
+            }
+        }
+
+        function checkAlarm() {
+            if (!alarmTime || alarmTriggered || !server) {
+                return;
+            }
+
+            const now = new Date();
+            const currentTime = now.getHours().toString().padStart(2, '0') + ':' +
+                now.getMinutes().toString().padStart(2, '0');
+
+            if (currentTime === alarmTime) {
+                addLogs('鬧鐘觸發！');
+                alarmTriggered = true;
+                triggerAlarmWave(10); // 觸發10秒
+            }
+        }
+
+        function triggerAlarmWave(durationInSeconds) {
+            if (!server) {
+                addLogs('設備未連接，鬧鐘無法觸發');
+                alarmTriggered = false;
+                return;
+            }
+
+            addLogs('鬧鐘響鈴 ' + durationInSeconds + ' 秒...');
+            startSending();
+
+            setTimeout(function () {
+                addLogs('鬧鐘停止。');
+                stopSending(); // stopSending 現在會自動清除鬧鐘
+            }, durationInSeconds * 1000);
+        }
+
+        // ========== 鬧鐘功能函數結束 ==========
+
+        window.onload = function () {
+            addLogs('页面加载完成');
+            addLogs('尚未连接设备');
+            showSuccessToast('请点击扫描按钮开始扫描');
+        }
 
     </script>
-<style>
+    <style>
         body {
             background-color: #111;
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
+
         .container {
             color: #ffe99d;
         }
+
         .overlay {
             display: none;
             position: fixed;
@@ -444,6 +464,7 @@
             z-index: 2;
             cursor: pointer;
         }
+
         .loader {
             display: none;
             width: 50px;
@@ -451,9 +472,9 @@
             aspect-ratio: 1;
             border-radius: 50%;
             background: #ffe99d;
-            --_m: 
-            conic-gradient(#0000 10%, #000),
-            linear-gradient(#000 0 0) content-box;
+            --_m:
+                conic-gradient(#0000 10%, #000),
+                linear-gradient(#000 0 0) content-box;
             -webkit-mask: var(--_m);
             mask: var(--_m);
             -webkit-mask-composite: source-out;
@@ -463,11 +484,13 @@
             top: 50%;
             left: calc(50% - 25px);
         }
+
         @keyframes l3 {
             to {
                 transform: rotate(1turn)
             }
         }
+
         .contain-item {
             display: flex;
             justify-content: center;
@@ -475,14 +498,17 @@
             flex-direction: column;
             align-items: center;
         }
+
         .title-section h2 {
             margin: 0 0 10px 0;
         }
+
         .btn-group {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+
         .close-btn {
             background-color: transparent;
             border: 1px solid #ffe99d;
@@ -492,13 +518,16 @@
             color: #ffe99d;
             transition: 0.3s;
         }
+
         .close-btn:hover {
             background-color: #ffe99d;
             color: #000;
         }
+
         .contain-item>*:not(:first-child) {
             margin-top: 6px;
         }
+
         .fixed-center {
             display: flex;
             justify-content: center;
@@ -508,9 +537,11 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
         .visible-hidden {
             visibility: hidden;
         }
+
         .common-btn {
             padding: 8px 50px;
             border-radius: 5px;
@@ -519,28 +550,34 @@
             font-size: 16px;
             cursor: pointer;
         }
+
         .red-btn {
             background-color: #fd3131;
         }
+
         .display-none {
             display: none;
             border: none;
         }
+
         .logs-title {
             display: flex;
             width: 100%;
             justify-content: center;
             margin-top: 26px;
         }
+
         .logs {
             height: 200px;
             overflow-y: scroll;
             border: 1px solid #ffe99d;
             margin: 10px 20px 0px 20px;
         }
+
         *::-webkit-scrollbar {
             width: 4px;
         }
+
         *::-webkit-scrollbar-thumb {
             background-color: #ffe99d;
         }
