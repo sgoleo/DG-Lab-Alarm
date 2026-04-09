@@ -143,7 +143,7 @@
             '3636363646464646']
         }
 
-        scanBT 函數現在直接掃描 V3
+        // scanBT 函數現在直接掃描 V3
         function scanBT() {
             if (typeof navigator.bluetooth === 'undefined') {
                 showErrorToast('您的浏览器不支持蓝牙API，请更换为Chrome浏览器')
@@ -236,7 +236,7 @@
                 intervalId = setInterval(setBT, 100);
             }
 
-            stopSending 函數現在會清除鬧鐘
+            // stopSending 函數現在會清除鬧鐘
             function stopSending() {
                 count = 0;
                 addLogs('停止寫入波形數據')
