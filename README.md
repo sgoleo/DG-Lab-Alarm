@@ -1,2 +1,2 @@
 郊狼藍牙鬧鐘系統 (V3專用版本)
-<img width="1511" height="1406" alt="image" src="https://github.com/user-attachments/assets/ed96aadf-83b0-44e0-9770-a7d2b7bd3569" />
+<img width="1470" height="955" alt="截圖 2026-04-09 下午6 14 55" src="https://github.com/user-attachments/assets/d2013fdb-6b3c-42a9-9b1b-5f02c62781f5" />
